@@ -1,92 +1,107 @@
-# cb-1
+# Übungsblatt 1
+## Generelles
+Die ersten beiden Aufgaben dienen zur Vertiefung Ihrer praktischen Erfahrungen in C. Sie implementieren einen Stack und eine Baumstruktur, die wir später in abgewandelter Form bei der internen Repräsentation des eingelesenen Quelltextes sowie bei der Ausführung durch den Interpreter benötigen.
 
+## Allgemeine Hinweise
+Für diese und alle folgenden Praktikumsaufgaben gilt, dass Einsendungen, die in der jeweils mitgegebenen Testumgebung nicht laufen, mit null Punkten bewertet werden! Das beinhaltet insbesondere alle Programme, die sich nicht fehlerfrei kompilieren lassen. Als Testsystem werden wir dabei gruenau6 mit den dort installierten Compilern und Compilerwerkzeugen benutzen. Prüfen Sie bitte rechtzeitig vor der Abgabe, ob ihr Programm auch dort lauffähig ist. Wir akzeptieren keine Entschuldigungen der Form „aber bei mir Zuhause hat es funktioniert“ ;).
 
+Ebenfalls mit null Punkten werden alle Abgaben bewertet, die sich nicht exakt an die vorgegebenen Formate halten. Hier sollen insbesondere falsch gepackte Archive erwähnt werden (die nicht alle nötigen/die falschen/zu viele Dateien enthalten, eine falsche Verzeichnisstruktur besitzen, ...).
 
-## Getting started
+> Um Ihnen die Abgabe zu erleichtern, geben wir Ihnen ein Makefile mit, welches die folgenden Ziele unterstützt:
+> #### all
+> Übersetzt die Quelldateien und erzeugt eine ausführbare Datei.
+> #### run
+> Übersetzt die Quelldateien, erzeugt eine ausführbare Datei und startet das Testprogramm.
+> #### clean
+> Entfernt alle Zwischendateien und räumt in Ihrem Verzeichnis auf.
+> Bitte achten Sie bei Ihrer Implementation auf Speicherleckfreiheit bei korrekter Benutzung, d.h. bei paarweisem Aufruf von init() und release().
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Abgabemodus
+Die Quell- und Headerdateien sind in einem Git-Repository abzugeben. Darin sollen ausschließlich die Dateien stack.h, stack.c, syntree.h und syntree.c enthalten sein ohne irgendeine Verzeichnisstruktur (also alle Dateien im aktuellen Verzeichnis). 
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Zur Lösung der Aufgaben steht für Sie dieses Repository mit 
+- vorgegebenen Header-Dateien stack.h und syntree.h, 
+- den beiden Test-Dateien teststack.c und testsyntree.c 
+- sowie Makefiles 
 
-## Add your files
+zur Verfügung.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Aufgabe 1 (30 Punkte)
+### Kurzbeschreibung
+Implementieren Sie einen Stack, der beliebig viele Integerzahlen speichern kann ("beliebig viel" bedeutet für uns: lediglich begrenzt durch den Arbeitsspeicher). Erweitern Sie dabei eine vorgegebene Schnittstelle, so dass Ihr Stack in andere (bereits existierende) Programme eingebunden werden kann.
 
+### Aufgabenstellung
+Wie Sie in der gegebenen Headerdatei stack.h sehen können, betrachten wir einen Stack als eine Datenstruktur, auf der folgende Operationen ausgeführt werden können:
+
+```c
+// Initialisiert einen neuen Stack und liefert den Rückgabewert 0, 
+// falls keine Fehler bei der Initialisierung aufgetreten sind und andernfalls einen Fehlercode.
+int stackInit(IntStack *self)
+
+// Gibt den Stack und alle assoziierten Strukturen frei.
+void stackRelease(IntStack *self)
+
+// Legt den Wert von i auf den Stack.
+void stackPush(IntStack *self, int i)
+
+// Gibt das oberste Element des Stacks zurück.
+int stackTop(const IntStack *self)
+
+// Entfernt und liefert das oberste Element des Stacks.
+int stackPop(IntStack *self)
+
+// Gibt zurück, ob ein Stack leer ist, d.h. kein Element enthält (Rückgabewert != 0, wenn leer; == 0, wenn nicht). 
+int stackIsEmpty(const IntStack *self)
 ```
-cd existing_repo
-git remote add origin https://gitlab.informatik.hu-berlin.de/compilerbau-sose-2022/c-aufgaben/cb-1.git
-git branch -M main
-git push -uf origin main
+
+- Implementieren Sie den Stack in der Datei stack.c und erweitern Sie die Schnittstelle stack.h, so dass ein externes Programm nur die Headerdatei einbinden muss, um mit Ihren Stacks arbeiten zu können.
+
+- Sollte beim Aufruf einer der Methoden ein Fehler auftauchen, so soll eine sinnvolle Fehlerausgabe nach stderr und der Abbruch des Programms mit Exitcode != 0 erfolgen.
+
+- Zusätzlich stellen wir Ihnen ein Makefile und ein Testprogramm in der Datei teststack.c zur Verfügung. Ihre Lösung befindet sich auf dem richtigen Weg, wenn dieses Testprogramm (ohne Änderungen an den beiden letztgenannten Dateien) erfolgreich kompiliert und durchläuft. Bitte beachten Sie jedoch, dass die Testumgebung bei weitem nicht alle interessanten Testfälle abdeckt.
+
+- Hinweis: Sie werden feststellen, dass in der Datei stack.h eine Funktion namens void `stackPrint(const IntStack *self)` deklariert wurde. Es steht Ihnen frei diese Funktion zu Testzwecken zu implementieren.
+
+## Aufgabe 2 (70 Punkte)
+### Kurzbeschreibung
+Implementieren Sie eine Datenstruktur, die beliebig verzweigte Bäume speichern kann, mit den im Folgenden beschriebenen Methoden.
+
+### Aufgabenstellung
+Die hier von Ihnen zu implementierende Datenstruktur werden Sie bei der Konstruktion des abstrakten Syntaxbaumes benötigen, da uns die Bordmittel von C keine wirkliche Hilfe leisten.
+
+- Die zu implementierende Datenstruktur Syntree soll Baumknoten in beliebig komplexen Konfigurationen speichern können und davon beliebig viele. 
+- Beschreiben Sie die Implementation Ihrer Datenstruktur kurz in einem Programmkommentar am Anfang der Headerdatei.
+- Implementieren Sie dann die folgenden Operationen:
+
+```c
+// Initialisiert einen neuen Syntaxbaum und liefert den Rückgabewert 0, falls keine Fehler bei der 
+// Initialisierung aufgetreten sind und andernfalls einen Fehlercode.
+int syntreeInit(Syntree *self)
+
+// Gibt den Syntaxbaum und alle damit assoziierten Strukturen frei.
+void syntreeRelease(Syntree *self)
+
+// Erstellt einen neuen Knoten mit einem Zahlenwert als Inhalt und gibt dessen ID zurück; 
+// der ID-Typ ist durch Sie Ihrer Implementation entsprechend festzulegen.
+SyntreeNodeID syntreeNodeNumber(Syntree *self, int number)
+
+// Kapselt einen Knoten innerhalb eines anderen Knotens und gibt dessen ID zurück.
+SyntreeNodeID syntreeNodeTag(Syntree *self, SyntreeNodeID id)
+
+// Kapselt ein Knotenpaar innerhalb eines Knotens und gibt dessen ID zurück.
+SyntreeNodeID syntreeNodePair(Syntree *self, SyntreeNodeID id1, SyntreeNodeID id2)
+
+// Hängt einen Knoten an das Ende eines Listenknotens und gibt dessen ID zurück.
+SyntreeNodeID syntreeNodeAppend(Syntree *self, SyntreeNodeID list, SyntreeNodeID elem)
+
+// Hängt einen Knoten an den Anfang eines Listenknotens und gibt dessen ID zurück.
+SyntreeNodeID syntreeNodePrepend(Syntree *self, SyntreeNodeID elem, SyntreeNodeID list)
+
+// Gibt alle Zahlenknoten zwischen runden und alle zusammengesetzten Knoten zwischen 
+// geschweiften Klammern rekursiv (depth-first) auf der Standardausgabe aus.
+void syntreePrint(const Syntree *self, SyntreeNodeID root)
 ```
 
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.informatik.hu-berlin.de/compilerbau-sose-2022/c-aufgaben/cb-1/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+- Hinweis: es ist erlaubt bei der Ausgabe beliebig viele Leerzeichen und Zeilenenden zu verwenden; wir werden alle Zeichen aus der Ausgabe entfernen, für die isspace() wahr ist.
+- Sollte beim Aufruf einer der Methoden ein Fehler auftauchen, so soll eine sinnvolle Fehlerausgabe nach stderr und der Abbruch des Programms mit Exitcode != 0 erfolgen.
+- Führen Sie die Implementation in der Datei syntree.c durch. Zur Selbstüberprüfung stellen wir Ihnen auch hier ein Beispielprogramm und ein Makefile zur Verfügung.

@@ -1,0 +1,1 @@
+../../../solutions/lab-1/stack/Makefile
