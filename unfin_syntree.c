@@ -39,9 +39,9 @@ void syntreeRelease(Syntree *self){
 
 void nodeRelease(Node *node) //rekursiv von unten nach oben alles free()
 {
-	while(node -> unrelated !=NULL) // beginnt mit dem letzen baum
+	if(node -> unrelated !=NULL) // beginnt mit dem letzen baum
 	{
-		node=node->unrelated;
+		nodeRelease(node -> unrelated);
 	}
 while(node -> next != NULL) //setzt node auf den letzen Knoten der Geschwister
 {
