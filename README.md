@@ -17,7 +17,7 @@ Ebenfalls mit null Punkten werden alle Abgaben bewertet, die sich nicht exakt an
 > Bitte achten Sie bei Ihrer Implementation auf Speicherleckfreiheit bei korrekter Benutzung, d.h. bei paarweisem Aufruf von init() und release().
 
 ## Abgabemodus
-Die Quell- und Headerdateien sind in einem Git-Repository abzugeben. Darin sollen ausschließlich die Dateien stack.h, stack.c, syntree.h und syntree.c enthalten sein ohne irgendeine Verzeichnisstruktur (also alle Dateien im aktuellen Verzeichnis). 
+Die Lösung ist in einem Git-Repository abzugeben. 
 
 Zur Lösung der Aufgaben steht für Sie dieses Repository mit 
 - vorgegebenen Header-Dateien stack.h und syntree.h, 
